@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UserAPI.Domain\UserAPI.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="10.3.4" />
+      <PackageReference Include="MediatR" Version="9.0.0" />
+      <PackageReference Include="OneOf" Version="3.0.201" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handler\Query" />
+    </ItemGroup>
+
+</Project>
