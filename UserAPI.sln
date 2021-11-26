@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAPI.Contracts", "src\Us
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{0E07A9C8-3817-4A02-B2E9-7F7215E64101}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAPI.Infrastructure.UnitTests", "tests\UserAPI.Infrastructure.UnitTests\UserAPI.Infrastructure.UnitTests.csproj", "{03B7C13F-C2E5-4619-97BD-83A257904AEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,18 @@ Global
 		{5F14C5E1-E134-4A7C-BD10-7DB8C68C24C4}.Release|x64.Build.0 = Release|Any CPU
 		{5F14C5E1-E134-4A7C-BD10-7DB8C68C24C4}.Release|x86.ActiveCfg = Release|Any CPU
 		{5F14C5E1-E134-4A7C-BD10-7DB8C68C24C4}.Release|x86.Build.0 = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|x64.Build.0 = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Debug|x86.Build.0 = Debug|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|x64.ActiveCfg = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|x64.Build.0 = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|x86.ActiveCfg = Release|Any CPU
+		{03B7C13F-C2E5-4619-97BD-83A257904AEE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{29CA0268-4513-4A92-BF12-9C6697F3E1BC} = {7C279005-7602-4D27-AE37-821B6D0CF26D}
