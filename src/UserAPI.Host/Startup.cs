@@ -37,7 +37,7 @@ namespace UserAPI.Host
                 .AddSingleton<IPrivateKeyRepository, PrivateKeyRepository>()
                 .AddSingleton<IJwtFactory, JwtFactory>()
                 .AddSingleton<ISigningCredentialsFactory, RsaSecurityKeyFactory>()
-                .AddSingleton(_ => new MongoClient("mongodb://localhost:27017").GetDatabase("UserAPI"));
+                .AddSingleton(_ => new MongoClient("mongodb://host.docker.internal:27017").GetDatabase("UserAPI"));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
