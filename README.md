@@ -1,5 +1,5 @@
 # User API
-[![CircleCI](https://circleci.com/gh/Expeth/project-f/tree/dev.svg?style=svg)](https://circleci.com/gh/Expeth/project-f/tree/dev)
+[![CircleCI](https://circleci.com/gh/Expeth/project-f/tree/dev.svg?style=svg&circle-token=9c66ec6abcf2ec78f504e171a77281c583acf039)](https://circleci.com/gh/Expeth/project-f/tree/dev)
 
 This WebAPI provides the registration and authentication functionalities.
 
