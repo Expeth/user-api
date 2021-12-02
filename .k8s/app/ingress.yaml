@@ -1,0 +1,20 @@
+# https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: user-api
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: local-api.user.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: user-api
+            port:
+              number: 80

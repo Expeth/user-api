@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-api
+  labels:
+    app: user-api
+spec:
+  selector:
+    matchLabels:
+      app: user-api
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: user-api
+    spec:
+      containers:
+      - name: user-api
+        image: userapi:1.0.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: LocalDocker
+        ports:
+        - containerPort: 80
+          name:  http
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 128Mi
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthcheck
+        #     port: http
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthcheck
+        #     port: http
+        
