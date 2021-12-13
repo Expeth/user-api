@@ -1,11 +1,16 @@
+using System.Linq;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json.Linq;
 using UserAPI.Application.Common;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Application.Common.Abstraction.Repository;
@@ -14,6 +19,7 @@ using UserAPI.Infrastructure.Abstraction;
 using UserAPI.Infrastructure.Factory;
 using UserAPI.Infrastructure.Repository;
 using UserAPI.Infrastructure.Service;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace UserAPI.Host
 {
@@ -39,6 +45,9 @@ namespace UserAPI.Host
                 .AddSingleton<ISigningCredentialsFactory, RsaSecurityKeyFactory>()
                 .AddSingleton(_ => new MongoClient(Configuration.GetConnectionString("MongoDB")).GetDatabase("UserAPI"));
 
+            services.AddHealthChecks()
+                .AddCheck("application", () => HealthCheckResult.Healthy());
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,6 +65,27 @@ namespace UserAPI.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
+                // TODO: move to ext project
+                endpoints.MapHealthChecks("/healthcheck", new HealthCheckOptions
+                {
+                    ResponseWriter = (context, report) =>
+                    {
+                        context.Response.ContentType = "application/json";
+
+                        var json = new JObject(
+                            new JProperty("status", report.Status.ToString()),
+                            new JProperty("results", new JObject(report.Entries.Select(pair =>
+                                new JProperty(pair.Key, new JObject(
+                                    new JProperty("status", pair.Value.Status.ToString()),
+                                    new JProperty("description", pair.Value.Description),
+                                    new JProperty("data", new JObject(pair.Value.Data.Select(
+                                        p => new JProperty(p.Key, p.Value))))))))));
+
+                        return context.Response.WriteAsync(
+                            json.ToString(Formatting.Indented));
+                    }
+                });
             });
         }
     }
