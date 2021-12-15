@@ -28,7 +28,7 @@ namespace UserAPI.Infrastructure.Factory
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = nameof(JwtFactory),
+                Issuer = "UserApiJwtFactory",
                 IssuedAt = sessionEntity.CreationTime,
                 NotBefore = sessionEntity.CreationTime,
                 Expires = sessionEntity.CreationTime + TimeSpan.FromMilliseconds(1),

@@ -45,6 +45,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios.Base
             TRequest request)
         {
             await TestContext.Out.WriteLineAsync($"Request:\n{JsonConvert.SerializeObject(request)}");
+            await TestContext.Out.WriteLineAsync($"Sending request to: {HttpClient.BaseAddress}");
 
             var httpResponse = await HttpClient.PostAsJsonAsync(path, request);
             var httpResponseMessage = await httpResponse.Content.ReadAsStringAsync();

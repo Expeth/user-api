@@ -2,7 +2,7 @@
 
 namespace UserAPI.Infrastructure.Abstraction
 {
-    public interface IPrivateKeyRepository
+    public interface IPublicKeyRepository
     {
         Task<string> GetAsync();
     }

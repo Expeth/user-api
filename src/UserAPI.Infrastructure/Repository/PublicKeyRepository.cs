@@ -8,14 +8,14 @@ using UserAPI.Infrastructure.Model;
 
 namespace UserAPI.Infrastructure.Repository
 {
-    public class PrivateKeyRepository : IPrivateKeyRepository
+    public class PublicKeyRepository : IPublicKeyRepository
     {
-        private static readonly string PrivateKey = "privateKey";
+        private static readonly string PublicKey = "publicKey";
         
         private readonly IMemoryCache _memoryCache;
         private readonly JwtCfg _jwtConfig;
-        
-        public PrivateKeyRepository(IMemoryCache memoryCache, IOptions<JwtCfg> jwtConfig)
+
+        public PublicKeyRepository(IMemoryCache memoryCache, IOptions<JwtCfg> jwtConfig)
         {
             _memoryCache = memoryCache;
             _jwtConfig = jwtConfig.Value;
@@ -23,17 +23,17 @@ namespace UserAPI.Infrastructure.Repository
 
         public async Task<string> GetAsync()
         {
-            return await _memoryCache.GetOrCreateAsync(PrivateKey, async e => await GetFromStorageAsync());
+            return await _memoryCache.GetOrCreateAsync(PublicKey, async e => await GetFromStorageAsync());
         }
 
         private Task<string> GetFromStorageAsync()
         {
-            if (!File.Exists(_jwtConfig.PrivateKeyFileLocation))
+            if (!File.Exists(_jwtConfig.PublicKeyFileLocation))
             {
-                throw new FileNotFoundException("There are no pem file for private key.");
+                throw new FileNotFoundException("There are no pem file for public key.");
             }
             
-            return File.ReadAllTextAsync(_jwtConfig.PrivateKeyFileLocation);
+            return File.ReadAllTextAsync(_jwtConfig.PublicKeyFileLocation);
         }
     }
 }

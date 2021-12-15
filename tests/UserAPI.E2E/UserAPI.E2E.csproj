@@ -24,9 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="appsettings.Local.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <Content Include="appsettings.*.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

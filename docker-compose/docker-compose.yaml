@@ -7,16 +7,27 @@ services:
     image: mongo:latest
     ports:
       - 27017:27017
+
+  mongo-db-data-seed:
+    container_name: mongo-db-data-seed
+    image: mongo:latest
+    command: bash -c "mongo host.docker.internal/UserAPI /scripts/mongo-data-seed.js"
+    volumes:
+      - ./scripts:/scripts
+    depends_on:
+      - mongo-db
   
   user-api:
     container_name: user-api
-    image: userapi:1.0
+    image: userapi:local
     build:
       context: ../
       dockerfile: src/UserAPI.Host/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=LocalDocker
+    volumes:
+      - ../.keys:/keys
     depends_on:
       - mongo-db
     ports:
-      - 80:80
+      - 50000:80

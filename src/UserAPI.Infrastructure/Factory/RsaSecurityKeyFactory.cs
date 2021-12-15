@@ -19,7 +19,7 @@ namespace UserAPI.Infrastructure.Factory
 
         public async Task<SigningCredentials> CreateAsync()
         {
-            var privateKey = await _privateKeyRepository.GetPrivateKeyAsync();
+            var privateKey = await _privateKeyRepository.GetAsync();
             _rsa.ImportFromPem(privateKey);
 
             return new SigningCredentials(key: new RsaSecurityKey(_rsa), algorithm: SecurityAlgorithms.RsaSha256);

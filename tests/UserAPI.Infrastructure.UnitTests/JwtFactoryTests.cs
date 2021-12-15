@@ -22,7 +22,7 @@ namespace UserAPI.Infrastructure.UnitTests
         public void Setup()
         {
             _privateKeyRepository = new Mock<IPrivateKeyRepository>();
-            _privateKeyRepository.Setup(i => i.GetPrivateKeyAsync())
+            _privateKeyRepository.Setup(i => i.GetAsync())
                 .ReturnsAsync(PrivateKey);
             
             _jwtFactory = new JwtFactory(new RsaSecurityKeyFactory(_privateKeyRepository.Object));

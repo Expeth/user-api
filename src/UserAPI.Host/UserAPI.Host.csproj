@@ -17,5 +17,9 @@
     <ProjectReference Include="..\UserAPI.Contracts\UserAPI.Contracts.csproj" />
     <ProjectReference Include="..\UserAPI.Infrastructure\UserAPI.Infrastructure.csproj" />
   </ItemGroup>
+  
+<!--  <ItemGroup Condition="'$(Configuration)' == 'Debug'">-->
+<!--    <None Include="$(SolutionDir).keys\**" CopyToOutputDirectory="PreserveNewest" LinkBase="keys" />-->
+<!--  </ItemGroup>-->
 
 </Project>

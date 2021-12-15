@@ -1,8 +1,6 @@
 using System.Linq;
-using System.Security.Cryptography;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,19 +8,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UserAPI.Application.Common;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Application.Common.Abstraction.Repository;
 using UserAPI.Application.Common.Abstraction.Service;
+using UserAPI.Host.Extensions;
 using UserAPI.Infrastructure.Abstraction;
 using UserAPI.Infrastructure.Factory;
+using UserAPI.Infrastructure.Model;
 using UserAPI.Infrastructure.Repository;
 using UserAPI.Infrastructure.Service;
-using Formatting = Newtonsoft.Json.Formatting;
 
 namespace UserAPI.Host
 {
@@ -40,10 +39,12 @@ namespace UserAPI.Host
         {
             services.AddMediatR(typeof(IApplication).Assembly)
                 .AddMemoryCache()
+                .Configure<JwtCfg>(Configuration.GetSection("jwt"))
                 .AddValidatorsFromAssembly(typeof(IApplication).Assembly)
                 .AddTransient<IPasswordService, Pbkdf2PasswordService>()
                 .AddSingleton<IUserRepository, UserRepository>()
                 .AddSingleton<IPrivateKeyRepository, PrivateKeyRepository>()
+                .AddSingleton<IPublicKeyRepository, PublicKeyRepository>()
                 .AddSingleton<IJwtFactory, JwtFactory>()
                 .AddSingleton<ISigningCredentialsFactory, RsaSecurityKeyFactory>()
                 .AddSingleton<IRefreshTokenFactory, RefreshTokenFactory>()
@@ -51,27 +52,8 @@ namespace UserAPI.Host
                 .AddSingleton(_ =>
                     new MongoClient(Configuration.GetConnectionString("MongoDB")).GetDatabase("UserAPI"));
 
-            // TODO: move to ext project
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                var rsa = RSA.Create();
-                rsa.ImportFromPem("-----BEGIN PUBLIC KEY----- MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgGbHjnvrVtk47Ek0vt83BSIlEcmC sLEDliypcE+tqtrtoudkeFafaAsuCrnJq9yc1JYLhbYv5zELrVfT+Z3cOweblkzD rL1R6TxgELnMCvqAcLjX/246N/6RdWS0br0qRaEnsl9Z/QtEMTdMoAE0BKEHZrOp OdTX37DrHomGejnNAgMBAAE= -----END PUBLIC KEY-----");
-
-                options.IncludeErrorDetails = true;
-                
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new RsaSecurityKey(rsa),
-                    ValidIssuer = "JwtFactory",
-                    RequireSignedTokens = true,
-                    RequireExpirationTime = true,
-                    ValidateLifetime = false,
-                    ValidateAudience = false,
-                    ValidateIssuer = true,
-                };
-            });
-
-            services.AddHealthChecks()
+            services.AddBearerAuthentication(Configuration)
+                .AddHealthChecks()
                 .AddCheck("app", () => HealthCheckResult.Healthy());
 
             services.AddControllers();
