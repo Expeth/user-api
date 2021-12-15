@@ -21,9 +21,10 @@ jobs:
             dotnet test tests/UserAPI.Infrastructure.UnitTests
   e2e-tests:
     machine: true
+    working_directory: ~/app/docker-compose
     steps:
       - checkout:
-          path: docker-compose
+          path: ~/app
       - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build
 
 
