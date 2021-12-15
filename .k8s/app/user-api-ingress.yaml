@@ -4,12 +4,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: user-api
-  namespace: default
+  annotations:
 spec:
   ingressClassName: nginx
   rules:
   - host: local-api.user.com
-    http:
+      http:
       paths:
       - path: /
         pathType: Prefix

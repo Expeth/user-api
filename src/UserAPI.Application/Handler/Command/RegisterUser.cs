@@ -99,7 +99,7 @@ namespace UserAPI.Application.Handler.Command
                         (int)HashingAlgorithm.Pbkdf2,
                         request.Email);
                     
-                    var isCreated = await _userRepository.CreateUserAsync(entity);
+                    var isCreated = await _userRepository.CreateAsync(entity);
                     return isCreated ? new Response(entity.Id) : new ValidationFail("User should be unique");
                 }
                 catch (Exception e)

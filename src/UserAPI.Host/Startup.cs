@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Security.Cryptography;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
@@ -39,14 +42,37 @@ namespace UserAPI.Host
                 .AddMemoryCache()
                 .AddValidatorsFromAssembly(typeof(IApplication).Assembly)
                 .AddTransient<IPasswordService, Pbkdf2PasswordService>()
-                .AddSingleton<IUserRepository, DbUserRepository>()
+                .AddSingleton<IUserRepository, UserRepository>()
                 .AddSingleton<IPrivateKeyRepository, PrivateKeyRepository>()
                 .AddSingleton<IJwtFactory, JwtFactory>()
                 .AddSingleton<ISigningCredentialsFactory, RsaSecurityKeyFactory>()
-                .AddSingleton(_ => new MongoClient(Configuration.GetConnectionString("MongoDB")).GetDatabase("UserAPI"));
+                .AddSingleton<IRefreshTokenFactory, RefreshTokenFactory>()
+                .AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>()
+                .AddSingleton(_ =>
+                    new MongoClient(Configuration.GetConnectionString("MongoDB")).GetDatabase("UserAPI"));
+
+            // TODO: move to ext project
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                var rsa = RSA.Create();
+                rsa.ImportFromPem("-----BEGIN PUBLIC KEY----- MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgGbHjnvrVtk47Ek0vt83BSIlEcmC sLEDliypcE+tqtrtoudkeFafaAsuCrnJq9yc1JYLhbYv5zELrVfT+Z3cOweblkzD rL1R6TxgELnMCvqAcLjX/246N/6RdWS0br0qRaEnsl9Z/QtEMTdMoAE0BKEHZrOp OdTX37DrHomGejnNAgMBAAE= -----END PUBLIC KEY-----");
+
+                options.IncludeErrorDetails = true;
+                
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new RsaSecurityKey(rsa),
+                    ValidIssuer = "JwtFactory",
+                    RequireSignedTokens = true,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = false,
+                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                };
+            });
 
             services.AddHealthChecks()
-                .AddCheck("application", () => HealthCheckResult.Healthy());
+                .AddCheck("app", () => HealthCheckResult.Healthy());
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -60,8 +86,10 @@ namespace UserAPI.Host
         {
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI.Host v1"));
-
+            
+            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

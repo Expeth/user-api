@@ -31,7 +31,7 @@ namespace UserAPI.Infrastructure.Factory
                 Issuer = nameof(JwtFactory),
                 IssuedAt = sessionEntity.CreationTime,
                 NotBefore = sessionEntity.CreationTime,
-                Expires = sessionEntity.CreationTime + TimeSpan.FromMinutes(30),
+                Expires = sessionEntity.CreationTime + TimeSpan.FromMilliseconds(1),
                 SigningCredentials = await _signingCredentialsFactory.CreateAsync()
             };
             

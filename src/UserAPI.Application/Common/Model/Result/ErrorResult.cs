@@ -30,7 +30,9 @@ namespace UserAPI.Application.Common.Model.Result
         {
         }
 
-        public static InternalError FromException(Exception e) => new InternalError(e.Message);
+        public static InternalError FromException(Exception e) => FromMessage(e.Message);
+        
+        public static InternalError FromMessage(string msg) => new InternalError(msg);
     }
 
     public class InvalidCredentials : ValidationFail

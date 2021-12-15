@@ -7,16 +7,16 @@ using UserAPI.Domain.Entity;
 
 namespace UserAPI.Infrastructure.Repository
 {
-    public class DbUserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly IMongoDatabase _database;
 
-        public DbUserRepository(IMongoDatabase database)
+        public UserRepository(IMongoDatabase database)
         {
             _database = database;
         }
 
-        public async Task<bool> CreateUserAsync(UserEntity entity)
+        public async Task<bool> CreateAsync(UserEntity entity)
         {
             var collection = _database.GetCollection<UserEntity>("users");
             var duplicate = await collection.Find(i =>
@@ -30,7 +30,7 @@ namespace UserAPI.Infrastructure.Repository
             return true;
         }
 
-        public async Task<UserEntity> GetUserAsync(string login)
+        public async Task<UserEntity> GetAsync(string login)
         {
             var collection = _database.GetCollection<UserEntity>("users");
             var builder = Builders<UserEntity>.Filter;

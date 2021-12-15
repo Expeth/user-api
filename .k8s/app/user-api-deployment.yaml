@@ -30,12 +30,12 @@ spec:
             memory: 128Mi
           limits:
             memory: 128Mi
-        # livenessProbe:
-        #   httpGet:
-        #     path: /healthcheck
-        #     port: http
-        # readinessProbe:
-        #   httpGet:
-        #     path: /healthcheck
-        #     port: http
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: http
         

@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Application.Handler.Command;
 using UserAPI.Contracts.Request;
 using UserAPI.Contracts.Response;
+using UserAPI.Host.Extensions;
 
 namespace UserAPI.Host.Controllers
 {
@@ -39,9 +42,22 @@ namespace UserAPI.Host.Controllers
 
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(response =>
-                Ok(new AuthenticateUserResponse(response.Jwt, response.RenewToken)),
+                Ok(new AuthenticateUserResponse(response.Jwt, response.RefreshToken)),
                 validationFail => BadRequest(validationFail),
                 invalidCredentials => BadRequest(invalidCredentials),
+                internalError => StatusCode(500, internalError));
+        }
+        
+        [Authorize]
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshJwtRequest request)
+        {
+            var domainRequest = new RefreshJwt.Request(HttpContext.User.Claims.ToClaimsObject(), request.RefreshToken);
+
+            var domainResponse = await _mediator.Send(domainRequest);
+            return domainResponse.Match(response =>
+                    Ok(new RefreshJwtResponse(response.Jwt, response.RefreshToken)),
+                validationFail => BadRequest(validationFail),
                 internalError => StatusCode(500, internalError));
         }
     }

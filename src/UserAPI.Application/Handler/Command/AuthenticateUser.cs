@@ -28,12 +28,12 @@ namespace UserAPI.Application.Handler.Command
         public sealed class Response
         {
             public string Jwt { get; }
-            public string RenewToken { get; }
+            public string RefreshToken { get; }
 
-            public Response(string jwt, string renewToken)
+            public Response(string jwt, string refreshToken)
             {
                 Jwt = jwt;
-                RenewToken = renewToken;
+                RefreshToken = refreshToken;
             }
         }
 
@@ -43,15 +43,23 @@ namespace UserAPI.Application.Handler.Command
             OneOf<Response, ValidationFail, InvalidCredentials, InternalError>>
         {
             private readonly IJwtFactory _jwtFactory;
+            private readonly IRefreshTokenFactory _refreshTokenFactory;
+            private readonly IRefreshTokenRepository _refreshTokenRepository;
             private readonly IUserRepository _userRepository;
             private readonly IPasswordService _passwordService;
 
-            public Handler(IJwtFactory jwtFactory, IUserRepository userRepository,
-                IPasswordService passwordService)
+            public Handler(
+                IJwtFactory jwtFactory,
+                IUserRepository userRepository,
+                IPasswordService passwordService,
+                IRefreshTokenRepository refreshTokenRepository,
+                IRefreshTokenFactory refreshTokenFactory)
             {
                 _jwtFactory = jwtFactory;
                 _userRepository = userRepository;
                 _passwordService = passwordService;
+                _refreshTokenRepository = refreshTokenRepository;
+                _refreshTokenFactory = refreshTokenFactory;
             }
 
             public async Task<OneOf<Response, ValidationFail, InvalidCredentials, InternalError>> Handle(
@@ -62,7 +70,7 @@ namespace UserAPI.Application.Handler.Command
 
                 try
                 {
-                    var user = await _userRepository.GetUserAsync(request.Login);
+                    var user = await _userRepository.GetAsync(request.Login);
                     if (user == null)
                     {
                         //User not found
@@ -76,8 +84,15 @@ namespace UserAPI.Application.Handler.Command
                     }
 
                     var jwt = await _jwtFactory.CreateAsync(new SessionEntity(user.Id));
-                    //TODO: implement renew token
-                    return new Response(jwt, null);
+                    var refreshToken = _refreshTokenFactory.Create(user.Id);
+                    var isCreated = await _refreshTokenRepository.CreateAsync(refreshToken);
+
+                    if (!isCreated)
+                    {
+                        return InternalError.FromMessage("Refresh token failed to create.");
+                    }
+                    
+                    return new Response(jwt, refreshToken.Id);
                 }
                 catch (Exception e)
                 {
