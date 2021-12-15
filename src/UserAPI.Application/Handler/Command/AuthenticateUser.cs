@@ -70,7 +70,7 @@ namespace UserAPI.Application.Handler.Command
 
                 try
                 {
-                    var user = await _userRepository.GetAsync(request.Login);
+                    var user = await _userRepository.GetAsync(request.Login.ToLower());
                     if (user == null)
                     {
                         //User not found

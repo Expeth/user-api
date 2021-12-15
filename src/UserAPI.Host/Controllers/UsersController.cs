@@ -30,7 +30,7 @@ namespace UserAPI.Host.Controllers
             
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(
-                response => Ok(response),
+                response => Ok(new RegisterUserResponse(response.Id)),
                 validationFail => BadRequest(validationFail),
                 internalError => StatusCode(500, internalError));
         }

@@ -9,10 +9,10 @@ namespace UserAPI.Application.Common.Validation
         private static Regex EmailRegex = new Regex(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$",
             RegexOptions.None, TimeSpan.FromMilliseconds(100));
         
-        private static Regex UsernameRegex = new Regex(@"^[a-zA-Z0-9]+$",
+        private static Regex UsernameRegex = new Regex(@"^(?=.{4,25}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$",
             RegexOptions.None, TimeSpan.FromMilliseconds(100));
         
-        private static Regex PasswordRegex = new Regex(@"^(.{0,7}|[^0-9]*|[^A-Z])$",
+        private static Regex PasswordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\.,_\-=+@$!%*?&])[A-Za-z\d\.,_\-=+@$!%*?&]{8,25}$",
             RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
         public static Func<string, bool> Email = str => RegEx.IsMatchSafely(str, EmailRegex);

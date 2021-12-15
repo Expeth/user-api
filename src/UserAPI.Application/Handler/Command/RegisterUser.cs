@@ -66,7 +66,20 @@ namespace UserAPI.Application.Handler.Command
                     .NotEmpty()
                     .Must(ValidationRule.Password);
 
-                //TODO: add validations for FirstName, LastName, MiddleName
+                RuleFor(i => i.FirstName)
+                    .NotNull()
+                    .NotEmpty()
+                    .Must(i => i.Length <= 20);
+                
+                RuleFor(i => i.MiddleName)
+                    .NotNull()
+                    .NotEmpty()
+                    .Must(i => i.Length <= 20);
+                
+                RuleFor(i => i.LastName)
+                    .NotNull()
+                    .NotEmpty()
+                    .Must(i => i.Length <= 20);
             }
         }
 
@@ -95,9 +108,9 @@ namespace UserAPI.Application.Handler.Command
                 {
                     var passwordHash = _passwordService.GenerateHash(request.Password);
                     var entity = new UserEntity(Guid.NewGuid().ToString(), request.FirstName, request.MiddleName,
-                        request.LastName, null, request.Username, passwordHash.Hash, passwordHash.Salt,
+                        request.LastName, null, request.Username.ToLower(), passwordHash.Hash, passwordHash.Salt,
                         (int)HashingAlgorithm.Pbkdf2,
-                        request.Email);
+                        request.Email.ToLower());
                     
                     var isCreated = await _userRepository.CreateAsync(entity);
                     return isCreated ? new Response(entity.Id) : new ValidationFail("User should be unique");
