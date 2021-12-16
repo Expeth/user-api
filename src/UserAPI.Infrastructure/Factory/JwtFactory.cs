@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Domain.Entity;
 using UserAPI.Infrastructure.Abstraction;
+using UserAPI.Infrastructure.Model;
 
 namespace UserAPI.Infrastructure.Factory
 {
     public class JwtFactory: IJwtFactory
     {
         private readonly ISigningCredentialsFactory _signingCredentialsFactory;
+        private readonly JwtCfg _jwtConfig;
 
-        public JwtFactory(ISigningCredentialsFactory signingCredentialsFactory)
+        public JwtFactory(ISigningCredentialsFactory signingCredentialsFactory, IOptions<JwtCfg> cfg)
         {
             _signingCredentialsFactory = signingCredentialsFactory;
+            _jwtConfig = cfg.Value;
         }
 
         public async Task<string> CreateAsync(SessionEntity sessionEntity)
@@ -31,7 +35,7 @@ namespace UserAPI.Infrastructure.Factory
                 Issuer = "UserApiJwtFactory",
                 IssuedAt = sessionEntity.CreationTime,
                 NotBefore = sessionEntity.CreationTime,
-                Expires = sessionEntity.CreationTime + TimeSpan.FromMilliseconds(1),
+                Expires = sessionEntity.CreationTime + _jwtConfig.Lifetime,
                 SigningCredentials = await _signingCredentialsFactory.CreateAsync()
             };
             

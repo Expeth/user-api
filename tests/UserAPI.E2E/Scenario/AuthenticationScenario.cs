@@ -78,7 +78,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
             var authResponse = await SendAsJson("users/authenticate", authenticationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, authResponse.code);
-            Assert.IsTrue(authResponse.strResponse.Contains("Invalid Credentials"));
+            Assert.IsTrue(authResponse.strResponse.Contains("Invalid credentials"));
         }
         
         [Test]
@@ -92,7 +92,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
             var authResponse = await SendAsJson("users/authenticate", authenticationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, authResponse.code);
-            Assert.IsTrue(authResponse.strResponse.Contains("Invalid Credentials"));
+            Assert.IsTrue(authResponse.strResponse.Contains("Invalid credentials"));
         }
     }
 }

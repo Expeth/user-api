@@ -6,9 +6,11 @@ using MediatR;
 using UserAPI.Application.Common.Model.Result;
 using UserAPI.Application.Common.Validation;
 using OneOf;
+using Serilog;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Application.Common.Abstraction.Repository;
 using UserAPI.Application.Common.Abstraction.Service;
+using UserAPI.Application.Common.Model.Constant;
 using UserAPI.Domain.Entity;
 using UserAPI.Domain.Enum;
 
@@ -16,7 +18,7 @@ namespace UserAPI.Application.Handler.Command
 {
     public static class RegisterUser
     {
-        public sealed class Request : IRequest<OneOf<Response, ValidationFail, InternalError>>
+        public sealed class Request : IRequest<OneOf<Response, ValidationFail, ConflictResult, InternalError>>
         {
             public string Email { get; }
             public string Username { get; }
@@ -28,8 +30,8 @@ namespace UserAPI.Application.Handler.Command
             public Request(string email, string username, string password, string firstName, string lastName,
                 string middleName)
             {
-                Email = email;
-                Username = username;
+                Email = email.ToLower();
+                Username = username.ToLower();
                 Password = password;
                 FirstName = firstName;
                 LastName = lastName;
@@ -83,8 +85,11 @@ namespace UserAPI.Application.Handler.Command
             }
         }
 
-        public sealed class Handler : IRequestHandler<Request, OneOf<Response, ValidationFail, InternalError>>
+        public sealed class Handler : IRequestHandler<Request, 
+            OneOf<Response, ValidationFail, ConflictResult, InternalError>>
         {
+            private static readonly ILogger Logger = Log.ForContext(typeof(RegisterUser));
+
             private readonly IValidator<Request> _validator;
             private readonly IUserRepository _userRepository;
             private readonly IPasswordService _passwordService;
@@ -97,7 +102,7 @@ namespace UserAPI.Application.Handler.Command
                 _passwordService = passwordService;
             }
 
-            public async Task<OneOf<Response, ValidationFail, InternalError>> Handle(Request request,
+            public async Task<OneOf<Response, ValidationFail, ConflictResult, InternalError>> Handle(Request request,
                 CancellationToken cancellationToken)
             {
                 var validationResult = await _validator.ValidateAsync(request, cancellationToken);
@@ -108,17 +113,17 @@ namespace UserAPI.Application.Handler.Command
                 {
                     var passwordHash = _passwordService.GenerateHash(request.Password);
                     var entity = new UserEntity(Guid.NewGuid().ToString(), request.FirstName, request.MiddleName,
-                        request.LastName, null, request.Username.ToLower(), passwordHash.Hash, passwordHash.Salt,
+                        request.LastName, null, request.Username, passwordHash.Hash, passwordHash.Salt,
                         (int)HashingAlgorithm.Pbkdf2,
-                        request.Email.ToLower());
+                        request.Email);
                     
                     var isCreated = await _userRepository.CreateAsync(entity);
-                    return isCreated ? new Response(entity.Id) : new ValidationFail("User should be unique");
+                    return isCreated ? new Response(entity.Id) : ConflictResult.FromMessage(ErrorMessage.UserNotUnique);
                 }
                 catch (Exception e)
                 {
-                    //TODO: logging
-                    return InternalError.FromException(e);
+                    Logger.Error(e, "Exception during processing registration for email: {email}", request.Email);
+                    return InternalError.Default;
                 }
             }
         }

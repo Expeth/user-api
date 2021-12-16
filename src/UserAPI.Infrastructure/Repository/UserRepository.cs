@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using UserAPI.Application.Common.Abstraction.Repository;
 using UserAPI.Domain.Entity;
 
