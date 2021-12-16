@@ -5,9 +5,11 @@ using FluentValidation;
 using MediatR;
 using UserAPI.Application.Common.Model.Result;
 using OneOf;
+using Serilog;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Application.Common.Abstraction.Repository;
 using UserAPI.Application.Common.Extension;
+using UserAPI.Application.Common.Model.Constant;
 using UserAPI.Domain.Entity;
 using UserAPI.Domain.ValueObject;
 
@@ -54,12 +56,12 @@ namespace UserAPI.Application.Handler.Command
                 RuleFor(i => i.JwtClaims.IssuedAt)
                     .NotNull()
                     .Must(i => i.IsPassed())
-                    .WithMessage("Invalid JWT.");
+                    .WithMessage(ErrorMessage.InvalidJWT);
                 
                 RuleFor(i => i.JwtClaims.ExpiresAt)
                     .NotNull()
                     .Must(i => i.IsPassed())
-                    .WithMessage("Invalid JWT.");
+                    .WithMessage(ErrorMessage.InvalidJWT);
             }
         }
 
@@ -69,25 +71,27 @@ namespace UserAPI.Application.Handler.Command
             {
                 RuleFor(i => i.IsUsed)
                     .Equal(_ => false)
-                    .WithMessage("Invalid refresh token.");
+                    .WithMessage(ErrorMessage.InvalidRefreshToken);
                 
                 RuleFor(i => i.IsDeclined)
                     .Equal(_ => false)
-                    .WithMessage("Invalid refresh token.");
+                    .WithMessage(ErrorMessage.InvalidRefreshToken);
                 
                 RuleFor(i => i.ExpiresAt)
                     .Must(i => !i.IsPassed())
-                    .WithMessage("Invalid refresh token.");
+                    .WithMessage(ErrorMessage.InvalidRefreshToken);
                 
                 RuleFor(i => i.IssuedAt)
                     .Must(i => i.IsPassed())
-                    .WithMessage("Invalid refresh token.");
+                    .WithMessage(ErrorMessage.InvalidRefreshToken);
             }
         }
 
         public sealed class Handler : IRequestHandler<Request,
             OneOf<Response, ValidationFail, InternalError>>
         {
+            private static readonly ILogger Logger = Log.ForContext(typeof(RegisterUser));
+
             private readonly IRefreshTokenRepository _refreshTokenRepository;
             private readonly IRefreshTokenFactory _refreshTokenFactory;
             private readonly IValidator<RefreshTokenEntity> _rtValidator;
@@ -126,31 +130,29 @@ namespace UserAPI.Application.Handler.Command
 
                     if (refreshToken.UserId != request.JwtClaims.UserId)
                     {
-                        return new ValidationFail("Invalid refresh token.");
+                        return ValidationFail.FromMessage(ErrorMessage.InvalidRefreshToken);
                     }
                     
                     var isUpdated = await _refreshTokenRepository.SetUsedAsync(refreshToken.Id);
-
+                    
                     if (!isUpdated)
                     {
-                        return InternalError.FromMessage("Refresh token failed to update.");
+                        Logger.Error("Refresh Token wasn't able to update for userId: {userId}, tokenId: {tokenId}",
+                            request.JwtClaims.UserId, request.RefreshToken);
+                        return InternalError.Default;
                     }
                     
                     var jwt = await _jwtFactory.CreateAsync(new SessionEntity(request.JwtClaims.UserId));
                     var newRefreshToken = _refreshTokenFactory.Create(request.JwtClaims.UserId);
-                    var isCreated = await _refreshTokenRepository.CreateAsync(newRefreshToken);
-
-                    if (!isCreated)
-                    {
-                        return InternalError.FromMessage("Refresh token failed to create.");
-                    }
+                    await _refreshTokenRepository.CreateAsync(newRefreshToken);
 
                     return new Response(jwt, newRefreshToken.Id);
                 }
                 catch (Exception e)
                 {
-                    //TODO: add logging
-                    return InternalError.FromException(e);
+                    Logger.Error(e, "Exception during refreshing JWT for userId: {userId}, tokenId: {tokenId}",
+                        request.JwtClaims.UserId, request.RefreshToken);
+                    return InternalError.Default;
                 }
             }
         }

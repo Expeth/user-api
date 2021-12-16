@@ -12,7 +12,7 @@ namespace UserAPI.Host.Controllers
 {
     [ApiController]
     [Route("users")]
-    public class UsersController : ControllerBase
+    public class UsersController : GeneralController
     {
         private readonly IMediator _mediator;
 
@@ -30,9 +30,7 @@ namespace UserAPI.Host.Controllers
             
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(
-                response => Ok(new RegisterUserResponse(response.Id)),
-                validationFail => BadRequest(validationFail),
-                internalError => StatusCode(500, internalError));
+                response => Ok(new RegisterUserResponse(response.Id)), BadRequest, Conflict, InternalError);
         }
 
         [HttpPost("authenticate")]
@@ -42,10 +40,7 @@ namespace UserAPI.Host.Controllers
 
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(response =>
-                Ok(new AuthenticateUserResponse(response.Jwt, response.RefreshToken)),
-                validationFail => BadRequest(validationFail),
-                invalidCredentials => BadRequest(invalidCredentials),
-                internalError => StatusCode(500, internalError));
+                Ok(new AuthenticateUserResponse(response.Jwt, response.RefreshToken)), BadRequest, InternalError);
         }
         
         [Authorize]
@@ -56,9 +51,7 @@ namespace UserAPI.Host.Controllers
 
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(response =>
-                    Ok(new RefreshJwtResponse(response.Jwt, response.RefreshToken)),
-                validationFail => BadRequest(validationFail),
-                internalError => StatusCode(500, internalError));
+                    Ok(new RefreshJwtResponse(response.Jwt, response.RefreshToken)), BadRequest, InternalError);
         }
     }
 }

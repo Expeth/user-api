@@ -5,7 +5,7 @@ namespace UserAPI.Application.Common.Abstraction.Repository
 {
     public interface IRefreshTokenRepository
     {
-        Task<bool> CreateAsync(RefreshTokenEntity entity);
+        Task CreateAsync(RefreshTokenEntity entity);
         Task<bool> SetUsedAsync(string id);
         Task<RefreshTokenEntity> GetAsync(string id);
     }

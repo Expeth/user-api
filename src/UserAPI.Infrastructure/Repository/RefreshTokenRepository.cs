@@ -14,12 +14,11 @@ namespace UserAPI.Infrastructure.Repository
             _database = database;
         }
 
-        public async Task<bool> CreateAsync(RefreshTokenEntity entity)
+        public async Task CreateAsync(RefreshTokenEntity entity)
         {
             var collection = _database.GetCollection<RefreshTokenEntity>("refreshTokens");
 
             await collection.InsertOneAsync(entity);
-            return true;
         }
 
         public async Task<bool> SetUsedAsync(string id)

@@ -30,8 +30,8 @@ namespace UserAPI.Host.IntegrationTests.Scenario
 
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
-            Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
+            Assert.AreEqual(HttpStatusCode.Conflict, regResponse.code);
+            Assert.IsTrue(regResponse.strResponse.Contains("User must be unique"));
         }
         
         [Test]
@@ -43,8 +43,8 @@ namespace UserAPI.Host.IntegrationTests.Scenario
 
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
-            Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
+            Assert.AreEqual(HttpStatusCode.Conflict, regResponse.code);
+            Assert.IsTrue(regResponse.strResponse.Contains("User must be unique"));
         }
         
         [Test]
@@ -60,8 +60,8 @@ namespace UserAPI.Host.IntegrationTests.Scenario
 
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
-            Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
+            Assert.AreEqual(HttpStatusCode.Conflict, regResponse.code);
+            Assert.IsTrue(regResponse.strResponse.Contains("User must be unique"));
         }
         
         [Test]
@@ -77,8 +77,8 @@ namespace UserAPI.Host.IntegrationTests.Scenario
 
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
-            Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
+            Assert.AreEqual(HttpStatusCode.Conflict, regResponse.code);
+            Assert.IsTrue(regResponse.strResponse.Contains("User must be unique"));
         }
 
         [Theory]

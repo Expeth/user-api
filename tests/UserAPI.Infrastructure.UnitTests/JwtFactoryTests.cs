@@ -2,12 +2,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Domain.Entity;
 using UserAPI.Infrastructure.Abstraction;
 using UserAPI.Infrastructure.Factory;
+using UserAPI.Infrastructure.Model;
 
 namespace UserAPI.Infrastructure.UnitTests
 {
@@ -17,6 +19,7 @@ namespace UserAPI.Infrastructure.UnitTests
         
         private IJwtFactory _jwtFactory;
         private Mock<IPrivateKeyRepository> _privateKeyRepository;
+        private Mock<IOptions<JwtCfg>> _jwtCfg;
 
         [SetUp]
         public void Setup()
@@ -24,8 +27,12 @@ namespace UserAPI.Infrastructure.UnitTests
             _privateKeyRepository = new Mock<IPrivateKeyRepository>();
             _privateKeyRepository.Setup(i => i.GetAsync())
                 .ReturnsAsync(PrivateKey);
+
+            _jwtCfg = new Mock<IOptions<JwtCfg>>();
+            _jwtCfg.Setup(i => i.Value)
+                .Returns(new JwtCfg { Lifetime = TimeSpan.FromMinutes(10) });
             
-            _jwtFactory = new JwtFactory(new RsaSecurityKeyFactory(_privateKeyRepository.Object));
+            _jwtFactory = new JwtFactory(new RsaSecurityKeyFactory(_privateKeyRepository.Object), _jwtCfg.Object);
         }
 
         [Test]
