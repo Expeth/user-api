@@ -29,28 +29,16 @@ namespace UserAPI.Host
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
-        public ILogger Logger { get; set; }
-        public IWebHostEnvironment Environment { get; }
         
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("");
-            
-            Logger.LogCritical("Environment.EnvironmentName: " + Environment.EnvironmentName);
-            Logger.LogCritical("ASPNETCORE_ENVIRONMENT: " + System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
-            Logger.LogCritical("Mongo Configuration: " + Configuration.GetConnectionString("MongoDB"));
-            Logger.LogCritical("Does file exists: " + File.Exists("appsettings.LocalDocker.json"));
-            Logger.LogCritical("Does file exists: " + File.Exists("appsettings.Local.json"));
-            Logger.LogCritical("Text content: " + File.ReadAllText("appsettings.LocalDocker.json"));
-            
             services.AddMediatR(typeof(IApplication).Assembly)
                 .AddMemoryCache()
                 .Configure<JwtCfg>(Configuration.GetSection("jwt"))
