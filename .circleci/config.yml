@@ -42,5 +42,10 @@ workflows:
   userapi-workflow:
     jobs:
       - build
-      - unit-tests
-      - e2e-tests
+      - unit-tests:
+        requires:
+          - build
+      - e2e-tests:
+        requires:
+          - build
+          - unit-tests
