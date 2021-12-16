@@ -45,7 +45,13 @@ workflows:
       - unit-tests:
           requires:
             - build
+          filters:
+            branches:
+              ignore: /docs\/.*/
       - e2e-tests:
           requires:
             - build
             - unit-tests
+          filters:
+            branches:
+              ignore: /docs\/.*/
