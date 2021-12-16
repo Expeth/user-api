@@ -5,6 +5,7 @@ COPY tests/UserAPI.E2E /tests/UserAPI.E2E
 
 WORKDIR /tests/UserAPI.E2E
 
-RUN dotnet build -c Release
+RUN dotnet publish -c Release -o /out
+WORKDIR /out
 
-ENTRYPOINT ["dotnet", "test", "--no-build"]
+ENTRYPOINT ["dotnet", "test", "UserAPI.E2E.dll"]
