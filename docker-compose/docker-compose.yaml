@@ -11,7 +11,7 @@ services:
   mongo-db-data-seed:
     container_name: mongo-db-data-seed
     image: mongo:latest
-    command: bash -c "mongo-db/UserAPI /scripts/mongo-data-seed.js"
+    command: bash -c "mongo mongo-db/UserAPI /scripts/mongo-data-seed.js"
     volumes:
       - ./scripts:/scripts
     depends_on:
