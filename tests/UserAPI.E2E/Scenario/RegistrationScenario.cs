@@ -4,11 +4,10 @@ using NUnit.Framework;
 using UserAPI.Contracts.Request;
 using UserAPI.Contracts.Response;
 using UserAPI.Host.IntegrationTests.Common.Builder;
-using UserAPI.Host.IntegrationTests.Scenarios.Base;
 
-namespace UserAPI.Host.IntegrationTests.Scenarios
+namespace UserAPI.Host.IntegrationTests.Scenario
 {
-    public class RegistrationScenario : Scenario
+    public class RegistrationScenario : Base.Scenario
     {
         [Test]
         public async Task Should_SuccessfullyRegisterNewUser_When_ValidDataPassed()
@@ -19,7 +18,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
                 await SendAsJson<RegisterUserRequest, RegisterUserResponse>("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.OK, regResponse.code);
-            Assert.NotNull(regResponse.response.UserId, "Actual was: " + regResponse.strResponse);
+            Assert.NotNull(regResponse.response.UserId);
         }
 
         [Test]
@@ -32,8 +31,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
         }
         
         [Test]
@@ -46,8 +44,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
         }
         
         [Test]
@@ -64,8 +61,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
         }
         
         [Test]
@@ -82,8 +78,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("User should be unique"));
         }
 
         [Theory]
@@ -100,8 +95,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Email'"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Email'"));
         }
         
         [Theory]
@@ -119,8 +113,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Password'"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Password'"));
         }
         
         [Theory]
@@ -143,8 +136,7 @@ namespace UserAPI.Host.IntegrationTests.Scenarios
             var regResponse = await SendAsJson("users/register", registrationRequest);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, regResponse.code);
-            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Username'"),
-                $"Actual was: {regResponse.strResponse}");
+            Assert.IsTrue(regResponse.strResponse.Contains("The specified condition was not met for 'Username'"));
         }
     }
 }

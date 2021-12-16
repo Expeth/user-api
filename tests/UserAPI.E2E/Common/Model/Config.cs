@@ -1,4 +1,6 @@
-﻿namespace UserAPI.Host.IntegrationTests.Common.Model
+﻿using System.Collections.Generic;
+
+namespace UserAPI.Host.IntegrationTests.Common.Model
 {
     public class Config
     {
@@ -22,5 +24,13 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
+        public List<string> ExpiredJwt { get; set; }
+        public List<string> NotExpiredJwt { get; set; }
+        public string ValidRefreshToken { get; set; }
+        public string UsedRefreshToken { get; set; }
+        public string DeclinedRefreshToken { get; set; }
+        public string ExpiredRefreshToken { get; set; }
+        public string DifferentUserRefreshToken { get; set; }
+        
     }
 }
