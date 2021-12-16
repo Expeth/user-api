@@ -20,7 +20,8 @@ jobs:
           command: |
             dotnet test tests/UserAPI.Infrastructure.UnitTests
   e2e-tests:
-    machine: true
+    machine:
+      image: ubuntu-2004:202111-01
     working_directory: ~/app/docker-compose
     steps:
       - checkout:
