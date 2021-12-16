@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using UserAPI.Application.Common.Abstraction.Factory;
 using UserAPI.Application.Common.Abstraction.Repository;
@@ -37,12 +38,27 @@ namespace UserAPI.Application.Handler.Command
             }
         }
 
-        //TODO: add validator for request
+        public sealed class Validator : AbstractValidator<Request>
+        {
+            public Validator()
+            {
+                RuleFor(i => i.Login)
+                    .NotNull()
+                    .NotEmpty()
+                    .Must(i => i.Length < 30);
+                
+                RuleFor(i => i.Password)
+                    .NotNull()
+                    .NotEmpty()
+                    .Must(i => i.Length < 30);
+            }
+        }
 
         public sealed class Handler : IRequestHandler<Request,
             OneOf<Response, ValidationFail, InvalidCredentials, InternalError>>
         {
             private readonly IJwtFactory _jwtFactory;
+            private readonly IValidator<Request> _validator;
             private readonly IRefreshTokenFactory _refreshTokenFactory;
             private readonly IRefreshTokenRepository _refreshTokenRepository;
             private readonly IUserRepository _userRepository;
@@ -53,20 +69,24 @@ namespace UserAPI.Application.Handler.Command
                 IUserRepository userRepository,
                 IPasswordService passwordService,
                 IRefreshTokenRepository refreshTokenRepository,
-                IRefreshTokenFactory refreshTokenFactory)
+                IRefreshTokenFactory refreshTokenFactory,
+                IValidator<Request> validator)
             {
                 _jwtFactory = jwtFactory;
                 _userRepository = userRepository;
                 _passwordService = passwordService;
                 _refreshTokenRepository = refreshTokenRepository;
                 _refreshTokenFactory = refreshTokenFactory;
+                _validator = validator;
             }
 
             public async Task<OneOf<Response, ValidationFail, InvalidCredentials, InternalError>> Handle(
                 Request request,
                 CancellationToken cancellationToken)
             {
-                //TODO: validate request
+                var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+                if (!validationResult.IsValid) 
+                    return ValidationFail.FromValidationResult(validationResult);
 
                 try
                 {
