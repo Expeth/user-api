@@ -28,6 +28,6 @@ services:
     volumes:
       - ../.keys:/keys
     depends_on:
-      - mongo-db
+      - mongo-db-data-seed
     ports:
       - 50000:80
