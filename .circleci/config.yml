@@ -31,8 +31,8 @@ jobs:
           name: e2e-tests
           when: always
           command: |
-            docker logs mongo-db-data-seed --follow
-            docker logs user-api --follow
+            docker logs mongo-db-data-seed
+            docker logs user-api
             docker logs e2e-tests --follow
             export TESTS_EXIT_CODE=$(docker wait e2e-tests)
             exit $TESTS_EXIT_CODE
