@@ -25,8 +25,15 @@ jobs:
     steps:
       - checkout:
           path: ~/app
-      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build
-
+      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build -d
+      - run:
+          name: e2e-tests
+          when: always
+          command: |
+            docker logs userapi_e2e-tests --follow
+            export TESTS_EXIT_CODE=$(docker wait userapi_e2e-tests)
+            exit $TESTS_EXIT_CODE
+      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml down
 
 workflows:
   userapi-workflow:
