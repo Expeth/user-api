@@ -1,7 +1,7 @@
 <div>
     <h2 align=center> User API</h2>
     <p align="center">
-        <img align=center src="https://circleci.com/gh/Expeth/project-f/tree/dev.svg?style=svg&circle-token=9c66ec6abcf2ec78f504e171a77281c583acf039"/>
+        <img align=center src="https://circleci.com/gh/Expeth/user-api/tree/dev.svg?style=svg&circle-token=80c25fde688730c4dbc393ffeab9a12d6e9af00c"/>
     </p>
 </div>
 
