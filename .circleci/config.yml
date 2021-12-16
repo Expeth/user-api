@@ -43,9 +43,9 @@ workflows:
     jobs:
       - build
       - unit-tests:
-        requires:
-          - build
+          requires:
+            - build
       - e2e-tests:
-        requires:
-          - build
-          - unit-tests
+          requires:
+            - build
+            - unit-tests
