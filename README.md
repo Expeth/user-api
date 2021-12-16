@@ -1,7 +1,13 @@
-# User API
-[![CircleCI](https://circleci.com/gh/Expeth/project-f/tree/dev.svg?style=svg&circle-token=9c66ec6abcf2ec78f504e171a77281c583acf039)](https://circleci.com/gh/Expeth/project-f/tree/dev)
+<div>
+    <h2 align=center> User API</h2>
+    <p align="center">
+        <img align=center src="https://circleci.com/gh/Expeth/project-f/tree/dev.svg?style=svg&circle-token=9c66ec6abcf2ec78f504e171a77281c583acf039"/>
+    </p>
+</div>
 
-This WebAPI provides the registration and authentication functionalities.
+## What is this project about
+
+This simple WebAPI provides the registration and authentication functionalities. Was created just for experimental and education purposes. The Authentication API are based on JWT with assymentic RSA encryption. Private/public .pem files you can find in the .keys directory. The project isn't ideal and has a lot of stuff to improve. Periodically, I update it with new features/bugfixes/refactorings and performance improvements.
 
 ## Getting Started
 
@@ -9,23 +15,47 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+Options to build and run the application:
 
 ```
-1. Docker - should be downloaded from the official Docker website.
+1. Docker/Kubernetes
+2. .Net 5 SDK
 ```
 
-### Build and run
-
-Firstly, clone the repository to any folder you wish:
-
-```
-git clone https://github.com/Expeth/github-integration.git
-```
-Then, simply go to docker-compose folder and up it:
+### Run with Docker Compose
+Assuming, you're located in the root folder, run the next commands:
 ```
 cd docker-compose
-docker-compose up
+docker-compose up --build
+```
+
+### Run with Kubernetes
+If you use local Kubernetes cluster, you may use already defined manifests from .k8s folder to run the application. To build yaml files, Kustomize is used. To access API endpoints, you need to have NGINX ingress controller to be installed. For more info visit https://kubernetes.github.io/ingress-nginx/ 
+```
+cd .k8s
+kubectl apply -k .
+```
+
+### Run with .Net 5 SDK
+If you have .Net 5 SDK installed, your can build and run the project on .Net platform. For this, use VisualStudio/Rider or the next CLI commands:
+```
+dotnet restore .
+dotnet publish src/UserAPI.Host/ -c Release -o out
+dotnet out/UserAPI.Host.dll
+```
+Please NOTE, that in this case you also need to run MongoDB manually and update the configuration file (appsettings.<ENV>.json) with the right connection string.
+
+### E2E testing
+This project has E2E tests written with NUnit framework. They are included to CI pipeline. To run them locally you should use docker-compose. Here are the CLI commands you need to run in order to start tests execution:
+```
+cd docker-compose
+docker-compose up --build
+docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build
+```
+
+After they finished, clean up the local env with:
+```
+docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml down
 ```
 
 ## Built With
