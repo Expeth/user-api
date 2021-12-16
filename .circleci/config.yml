@@ -20,12 +20,22 @@ jobs:
           command: |
             dotnet test tests/UserAPI.Infrastructure.UnitTests
   e2e-tests:
-    machine: true
+    machine:
+      image: ubuntu-2004:202111-01
+    working_directory: ~/app/docker-compose
     steps:
       - checkout:
-          path: docker-compose
-      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build
-
+          path: ~/app
+      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build -d
+      - run:
+          name: e2e-tests
+          when: always
+          command: |
+            docker logs mongo-db-data-seed
+            docker logs e2e-tests --follow
+            export TESTS_EXIT_CODE=$(docker wait e2e-tests)
+            exit $TESTS_EXIT_CODE
+      - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml down
 
 workflows:
   userapi-workflow:

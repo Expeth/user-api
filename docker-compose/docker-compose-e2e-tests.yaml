@@ -3,7 +3,7 @@ version: "3.0"
 services:
 
   e2e-tests:
-    container_name: userapi-e2e-tests
+    container_name: e2e-tests
     image: userapi-e2e:local
     build:
       context: ../

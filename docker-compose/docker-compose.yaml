@@ -11,7 +11,7 @@ services:
   mongo-db-data-seed:
     container_name: mongo-db-data-seed
     image: mongo:latest
-    command: bash -c "mongo host.docker.internal/UserAPI /scripts/mongo-data-seed.js"
+    entrypoint: bash -c "while !</dev/tcp/mongo-db/27017; do sleep 5; done; mongo mongo-db/UserAPI /scripts/mongo-data-seed.js"
     volumes:
       - ./scripts:/scripts
     depends_on:
@@ -28,6 +28,7 @@ services:
     volumes:
       - ../.keys:/keys
     depends_on:
-      - mongo-db
+      mongo-db-data-seed:
+        condition: service_completed_successfully
     ports:
       - 50000:80
