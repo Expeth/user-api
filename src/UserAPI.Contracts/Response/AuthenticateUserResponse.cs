@@ -3,12 +3,12 @@
     public sealed class AuthenticateUserResponse
     {
         public string Jwt { get; set; }
-        public string RenewToken { get; set; }
+        public string RefreshToken { get; set; }
 
-        public AuthenticateUserResponse(string jwt, string renewToken)
+        public AuthenticateUserResponse(string jwt, string refreshToken)
         {
             Jwt = jwt;
-            RenewToken = renewToken;
+            RefreshToken = refreshToken;
         }
     }
 }

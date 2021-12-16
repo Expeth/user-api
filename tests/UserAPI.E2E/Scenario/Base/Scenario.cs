@@ -8,13 +8,22 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using UserAPI.Host.IntegrationTests.Common.Model;
 
-namespace UserAPI.Host.IntegrationTests.Scenarios.Base
+namespace UserAPI.Host.IntegrationTests.Scenario.Base
 {
     public abstract class Scenario
     {
         protected readonly Config Config;
         protected readonly HttpClient HttpClient;
         protected readonly IConfiguration Configuration;
+
+        protected HttpClient AuthorizedHttpClient(string bearer) => new()
+        {
+            BaseAddress = new Uri(Config.Api.UserAPI),
+            DefaultRequestHeaders =
+            {
+                { "Authorization", $"Bearer {bearer}" }
+            }
+        };
 
         public Scenario()
         {
@@ -32,22 +41,44 @@ namespace UserAPI.Host.IntegrationTests.Scenarios.Base
             };
         }
 
-        protected async Task<(HttpStatusCode code, string strResponse, TResponse response)> SendAsJson<TRequest,
-            TResponse>(string path, TRequest request)
+        protected Task<(HttpStatusCode code, string strResponse, TResponse response)> SendAsJson<TRequest,
+            TResponse>(string path, TRequest request, string jwt = null)
         {
-            var httpResponse = await SendAsJson(path, request);
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                return SendAsJsonInternal<TRequest, TResponse>(path, request, AuthorizedHttpClient(jwt));
+            }
+            
+            return SendAsJsonInternal<TRequest, TResponse>(path, request, HttpClient);
+        }
+
+        protected Task<(HttpStatusCode code, string strResponse)> SendAsJson<TRequest>(string path,
+            TRequest request, string jwt = null)
+        {
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                return SendAsJsonInternal(path, request, AuthorizedHttpClient(jwt));
+            }
+            
+            return SendAsJsonInternal(path, request, HttpClient);
+        }
+        
+        private async Task<(HttpStatusCode code, string strResponse, TResponse response)> SendAsJsonInternal<TRequest,
+            TResponse>(string path, TRequest request, HttpClient httpClient)
+        {
+            var httpResponse = await SendAsJsonInternal(path, request, httpClient);
 
             return (httpResponse.code, httpResponse.strResponse,
                 JsonConvert.DeserializeObject<TResponse>(httpResponse.strResponse));
         }
 
-        protected async Task<(HttpStatusCode code, string strResponse)> SendAsJson<TRequest>(string path,
-            TRequest request)
+        private async Task<(HttpStatusCode code, string strResponse)> SendAsJsonInternal<TRequest>(string path,
+            TRequest request, HttpClient httpClient)
         {
             await TestContext.Out.WriteLineAsync($"Request:\n{JsonConvert.SerializeObject(request)}");
-            await TestContext.Out.WriteLineAsync($"Sending request to: {HttpClient.BaseAddress}");
+            await TestContext.Out.WriteLineAsync($"Sending request to: {httpClient.BaseAddress}");
 
-            var httpResponse = await HttpClient.PostAsJsonAsync(path, request);
+            var httpResponse = await httpClient.PostAsJsonAsync(path, request);
             var httpResponseMessage = await httpResponse.Content.ReadAsStringAsync();
 
             await TestContext.Out.WriteLineAsync(
