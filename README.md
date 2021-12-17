@@ -30,7 +30,17 @@ docker-compose up --build
 ```
 
 ### Run with Kubernetes
-If you use local Kubernetes cluster, you may use already defined manifests from .k8s folder to run the application. To build yaml files, Kustomize is used. To access API endpoints, you need to have NGINX ingress controller to be installed. For more info visit https://kubernetes.github.io/ingress-nginx/ 
+If you use local Kubernetes cluster, you may use already defined manifests from .k8s folder to run the application. To build yaml files, Kustomize is used. To access API endpoints, you need to have NGINX ingress controller to be installed and the hosts file updated to use the DNS name. For more info about NGINX ingress controller visit https://kubernetes.github.io/ingress-nginx/
+
+Add these lines to your hosts file:
+```
+# For local UserAPI testing
+127.0.0.1	local-api.user.com
+127.0.0.1	local-api.mongo.com
+```
+With local-api.user.com you'll be able to access the API itself, and with local-api.mongo.com - mongo-express.
+
+Commands to start the whole infra:
 ```
 cd .k8s
 kubectl apply -k .

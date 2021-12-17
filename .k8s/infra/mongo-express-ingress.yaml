@@ -3,18 +3,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: user-api
+  name: mongo-express
   annotations:
 spec:
   ingressClassName: nginx
   rules:
-  - host: local-api.user.com
+  - host: local-api.mongo.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: user-api
+            name: mongo-express
             port:
-              number: 80
+              number: 8081
