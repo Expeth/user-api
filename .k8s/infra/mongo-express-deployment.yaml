@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mongo-express
+  labels:
+    app:  mongo-express
+spec:
+  selector:
+    matchLabels:
+      app: mongo-express
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  mongo-express
+    spec:
+      containers:
+      - name:  mongo-express
+        image:  mongo-express:latest
+        env:
+        - name: ME_CONFIG_MONGODB_SERVER
+          value: mongo-db.default.svc.cluster.local
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort:  8081
+          name:  mongo-express
+      restartPolicy: Always

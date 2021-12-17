@@ -140,6 +140,11 @@ namespace UserAPI.Application.Handler.Command
                     }
 
                     var refreshToken = await _refreshTokenRepository.GetAsync(request.RefreshToken);
+                    if (refreshToken == null)
+                    {
+                        return ValidationFail.FromMessage(ErrorMessage.InvalidRefreshToken);
+                    }
+                    
                     var rtValidationResult = await _rtValidator.ValidateAsync(refreshToken, cancellationToken);
                     if (!rtValidationResult.IsValid) 
                         return ValidationFail.FromValidationResult(rtValidationResult);

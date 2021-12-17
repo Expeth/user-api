@@ -6,3 +6,20 @@ resources:
 - app/user-api-deployment.yaml
 - app/user-api-service.yaml
 - app/user-api-ingress.yaml
+- infra/mongo-db-deployment.yaml
+- infra/mongo-db-service.yaml
+- infra/mongo-db-seed.yaml
+- infra/mongo-express-deployment.yaml
+- infra/mongo-express-service.yaml
+- infra/mongo-express-ingress.yaml
+
+secretGenerator:
+- name: rsa-keys
+  files:
+  - infra/.keys/public.pem
+  - infra/.keys/private.pem
+
+configMapGenerator:
+- name: data-seed-script
+  files:
+  - mongo-data-seed.js=infra/scripts/mongo-data-seed.js

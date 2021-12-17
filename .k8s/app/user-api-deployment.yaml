@@ -14,13 +14,19 @@ spec:
       labels:
         app: user-api
     spec:
+      volumes:
+      - name: rsa-keys
+        secret:
+          secretName: rsa-keys
       containers:
       - name: user-api
-        image: userapi:1.0.0
+        image: userapi:local
         imagePullPolicy: IfNotPresent
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: LocalDocker
+        - name: ConnectionStrings__MongoDB
+          value: "mongodb://mongo-db.default.svc.cluster.local:27017"
         ports:
         - containerPort: 80
           name:  http
@@ -38,4 +44,6 @@ spec:
           httpGet:
             path: /healthcheck
             port: http
-        
+        volumeMounts:
+        - name: rsa-keys
+          mountPath: /keys

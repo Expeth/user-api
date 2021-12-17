@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-db-seed
+  namespace: default
+  labels:
+    app: mongo-db-seed
+spec:
+  template:
+    metadata:
+      name: mongo-db-seed
+      labels:
+        app: mongo-db-seed
+    spec:
+      containers:
+      - name: mongo-db-seed
+        image: mongo:latest
+        command: ['bash', '-c', 'while !</dev/tcp/mongo-db.default.svc.cluster.local/27017; do sleep 5; done; mongo mongo-db.default.svc.cluster.local/UserAPI /scripts/mongo-data-seed.js']
+        volumeMounts:
+        - name: seed-scripts
+          mountPath: /scripts
+      volumes:
+      - name: seed-scripts
+        configMap:
+          name: data-seed-script
+      restartPolicy: OnFailure
