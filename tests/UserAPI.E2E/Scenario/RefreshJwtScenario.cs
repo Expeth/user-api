@@ -17,7 +17,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_SuccessfullyRefreshJwt_When_ExpiredJwtAndValidRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt.First();
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.ValidRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
@@ -35,7 +35,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_FailRefreshJwt_When_ExpiredJwtAndUsedRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt.First();
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.UsedRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
@@ -52,7 +52,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_FailRefreshJwt_When_ExpiredJwtAndDeclinedRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt.First();
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.DeclinedRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
@@ -69,7 +69,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_FailRefreshJwt_When_ExpiredJwtAndExpiredRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt.First();
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.ExpiredRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
@@ -86,7 +86,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_FailRefreshJwt_When_ExpiredJwtAndDifferentUserRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt.First();
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.DifferentUserRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
@@ -103,8 +103,25 @@ namespace UserAPI.Host.IntegrationTests.Scenario
         [Test]
         public async Task Should_FailRefreshJwt_When_NotExpiredJwtAndValidRefreshTokenPassed()
         {
-            var expiredJwt = Config.TestData.ValidUser.NotExpiredJwt.First();
+            var notExpiredJwt = Config.TestData.ValidUser.NotExpiredJwt;
             var validRefreshToken = Config.TestData.ValidUser.ValidRefreshToken;
+
+            var refreshJwtRequest = new RefreshJwtRequestBuilder()
+                .WithRefreshToken(validRefreshToken)
+                .Build();
+
+            var refreshJwtResponse =
+                await SendAsJson("users/refresh", refreshJwtRequest, notExpiredJwt);
+            
+            Assert.AreEqual(HttpStatusCode.BadRequest, refreshJwtResponse.code);
+            Assert.IsTrue(refreshJwtResponse.strResponse.Contains("Invalid JWT"));
+        }
+
+        [Test]
+        public async Task Should_FailRefreshJwt_When_ExpiredJwtAndRefreshTokenDoesntMatchCurrentSessionPassed()
+        {
+            var expiredJwt = Config.TestData.ValidUser.ExpiredJwt;
+            var validRefreshToken = Config.TestData.ValidUser.DoesntMatchSessionRefreshToken;
 
             var refreshJwtRequest = new RefreshJwtRequestBuilder()
                 .WithRefreshToken(validRefreshToken)
@@ -114,7 +131,7 @@ namespace UserAPI.Host.IntegrationTests.Scenario
                 await SendAsJson("users/refresh", refreshJwtRequest, expiredJwt);
             
             Assert.AreEqual(HttpStatusCode.BadRequest, refreshJwtResponse.code);
-            Assert.IsTrue(refreshJwtResponse.strResponse.Contains("Invalid JWT"));
+            Assert.IsTrue(refreshJwtResponse.strResponse.Contains("Invalid refresh token"));
         }
     }
 }

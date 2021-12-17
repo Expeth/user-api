@@ -29,13 +29,14 @@ namespace UserAPI.Infrastructure.Factory
             claims.Add(new Claim("SessionID", sessionEntity.Id));
             claims.Add(new Claim("UserID", sessionEntity.UserId));
 
+            var now = DateTime.UtcNow;
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Issuer = "UserApiJwtFactory",
-                IssuedAt = sessionEntity.CreationTime,
-                NotBefore = sessionEntity.CreationTime,
-                Expires = sessionEntity.CreationTime + _jwtConfig.Lifetime,
+                IssuedAt = now,
+                NotBefore = now,
+                Expires = now + _jwtConfig.Lifetime,
                 SigningCredentials = await _signingCredentialsFactory.CreateAsync()
             };
             

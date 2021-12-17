@@ -4,6 +4,6 @@ namespace UserAPI.Application.Common.Abstraction.Factory
 {
     public interface IRefreshTokenFactory
     {
-        RefreshTokenEntity Create(string userId);
+        RefreshTokenEntity Create(string userId, string sessionId);
     }
 }

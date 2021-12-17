@@ -5,20 +5,14 @@ namespace UserAPI.Domain.Entity
     public class SessionEntity
     {
         public string Id { get; set; }
-        public DateTime CreationTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public string UserId { get; set; }
 
-        public SessionEntity(string id, DateTime creationTime, string userId)
+        public SessionEntity(string id, DateTime creationTime, string userId, DateTime? endTime = null)
         {
             Id = id;
-            CreationTime = creationTime;
-            UserId = userId;
-        }
-
-        public SessionEntity(string userId)
-        {
-            Id = Guid.NewGuid().ToString();
-            CreationTime = DateTime.UtcNow;
+            StartTime = creationTime;
             UserId = userId;
         }
     }
