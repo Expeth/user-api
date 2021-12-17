@@ -6,10 +6,10 @@ namespace UserAPI.Infrastructure.Factory
 {
     public class RefreshTokenFactory : IRefreshTokenFactory
     {
-        public RefreshTokenEntity Create(string userId)
+        public RefreshTokenEntity Create(string userId, string sessionId)
         {
             return new RefreshTokenEntity(Guid.NewGuid().ToString(),
-                DateTime.UtcNow, DateTime.UtcNow.AddDays(1), userId);
+                DateTime.UtcNow, DateTime.UtcNow.AddDays(1), userId, sessionId);
         }
     }
 }

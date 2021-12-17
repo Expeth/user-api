@@ -9,12 +9,21 @@ var users = [
 db.users.remove({ });
 db.users.insert(users);
 
+var sessions = [
+    { _id: "39459de2-336d-4493-980e-97d6bf2f531b", UserId: "00000000-0000-0000-0000-000000000001", StartTime: "2021-12-16T12:35:37", EndTime: null },
+    { _id: "ba2c0c85-f201-49d1-aae0-2f89a85bb895", UserId: "00000000-0000-0000-0000-000000000001", StartTime: "2021-12-16T12:35:37", EndTime: "2021-12-16T12:35:37" },
+]
+
+db.sessions.remove({ });
+db.sessions.insert(sessions);
+
 var refreshTokens = [
-    { _id: "00000000-0000-0000-0000-000000000101", UserId: "00000000-0000-0000-0000-000000000001", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: false },
-    { _id: "00000000-0000-0000-0000-000000000102", UserId: "00000000-0000-0000-0000-000000000001", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: true, IsDeclined: false },
-    { _id: "00000000-0000-0000-0000-000000000103", UserId: "00000000-0000-0000-0000-000000000001", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: true },
-    { _id: "00000000-0000-0000-0000-000000000104", UserId: "00000000-0000-0000-0000-000000000001", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2021-12-16T12:35:37", IsUsed: false, IsDeclined: false },
-    { _id: "00000000-0000-0000-0000-000000000201", UserId: "00000000-0000-0000-0000-000000000002", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: false }
+    { _id: "00000000-0000-0000-0000-000000000101", UserId: "00000000-0000-0000-0000-000000000001", SessionId: "39459de2-336d-4493-980e-97d6bf2f531b", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: false },
+    { _id: "00000000-0000-0000-0000-000000000102", UserId: "00000000-0000-0000-0000-000000000001", SessionId: "39459de2-336d-4493-980e-97d6bf2f531b", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: true, IsDeclined: false },
+    { _id: "00000000-0000-0000-0000-000000000103", UserId: "00000000-0000-0000-0000-000000000001", SessionId: "39459de2-336d-4493-980e-97d6bf2f531b", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: true },
+    { _id: "00000000-0000-0000-0000-000000000104", UserId: "00000000-0000-0000-0000-000000000001", SessionId: "39459de2-336d-4493-980e-97d6bf2f531b", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2021-12-16T12:35:37", IsUsed: false, IsDeclined: false },
+    { _id: "00000000-0000-0000-0000-000000000105", UserId: "00000000-0000-0000-0000-000000000001", SessionId: "ba2c0c85-f201-49d1-aae0-2f89a85bb895", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: false },
+    { _id: "00000000-0000-0000-0000-000000000201", UserId: "00000000-0000-0000-0000-000000000002", SessionId: "", IssuedAt: "2021-12-16T12:35:37", ExpiresAt: "2099-12-16T12:35:37", IsUsed: false, IsDeclined: false }
 ];
 
 db.refreshTokens.remove({ });

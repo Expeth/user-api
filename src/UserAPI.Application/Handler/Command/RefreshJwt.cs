@@ -95,7 +95,9 @@ namespace UserAPI.Application.Handler.Command
             private readonly IRefreshTokenRepository _refreshTokenRepository;
             private readonly IRefreshTokenFactory _refreshTokenFactory;
             private readonly IValidator<RefreshTokenEntity> _rtValidator;
+            private readonly ISessionsRepository _sessionsRepository;
             private readonly IValidator<Request> _requestValidator;
+            private readonly ISessionFactory _sessionFactory;
             private readonly IJwtFactory _jwtFactory;
             
             public Handler(
@@ -103,13 +105,17 @@ namespace UserAPI.Application.Handler.Command
                 IRefreshTokenFactory refreshTokenFactory,
                 IJwtFactory jwtFactory,
                 IValidator<Request> requestValidator,
-                IValidator<RefreshTokenEntity> rtValidator)
+                IValidator<RefreshTokenEntity> rtValidator,
+                ISessionFactory sessionFactory,
+                ISessionsRepository sessionsRepository)
             {
                 _refreshTokenRepository = refreshTokenRepository;
                 _refreshTokenFactory = refreshTokenFactory;
                 _jwtFactory = jwtFactory;
                 _requestValidator = requestValidator;
                 _rtValidator = rtValidator;
+                _sessionFactory = sessionFactory;
+                _sessionsRepository = sessionsRepository;
             }
 
             public async Task<OneOf<Response, ValidationFail, InternalError>> Handle(
@@ -122,13 +128,28 @@ namespace UserAPI.Application.Handler.Command
                 
                 try
                 {
+                    var session = await _sessionsRepository.GetAsync(request.JwtClaims.SessionId);
+                    if (session == null || session.UserId != request.JwtClaims.UserId)
+                    {
+                        return ValidationFail.FromMessage(ErrorMessage.InvalidSession);
+                    }
+
+                    if (session.EndTime.HasValue && session.EndTime.Value.IsPassed())
+                    {
+                        return ValidationFail.FromMessage(ErrorMessage.InvalidSession);
+                    }
+
                     var refreshToken = await _refreshTokenRepository.GetAsync(request.RefreshToken);
-                    
                     var rtValidationResult = await _rtValidator.ValidateAsync(refreshToken, cancellationToken);
                     if (!rtValidationResult.IsValid) 
                         return ValidationFail.FromValidationResult(rtValidationResult);
 
                     if (refreshToken.UserId != request.JwtClaims.UserId)
+                    {
+                        return ValidationFail.FromMessage(ErrorMessage.InvalidRefreshToken);
+                    }
+
+                    if (refreshToken.SessionId != session.Id)
                     {
                         return ValidationFail.FromMessage(ErrorMessage.InvalidRefreshToken);
                     }
@@ -141,9 +162,10 @@ namespace UserAPI.Application.Handler.Command
                             request.JwtClaims.UserId, request.RefreshToken);
                         return InternalError.Default;
                     }
-                    
-                    var jwt = await _jwtFactory.CreateAsync(new SessionEntity(request.JwtClaims.UserId));
-                    var newRefreshToken = _refreshTokenFactory.Create(request.JwtClaims.UserId);
+
+                    var jwt = await _jwtFactory.CreateAsync(session);
+                    var newRefreshToken = _refreshTokenFactory.Create(request.JwtClaims.UserId, session.Id);
+
                     await _refreshTokenRepository.CreateAsync(newRefreshToken);
 
                     return new Response(jwt, newRefreshToken.Id);

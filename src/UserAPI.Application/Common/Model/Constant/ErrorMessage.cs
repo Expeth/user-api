@@ -7,6 +7,7 @@
         public static readonly string InvalidCredentials = "Invalid credentials";
         public static readonly string UserNotUnique = "User must be unique";
         public static readonly string InvalidRefreshToken = "Invalid refresh token";
+        public static readonly string InvalidSession = "Invalid session";
         public static readonly string InvalidJWT = "Invalid JWT";
     }
 }

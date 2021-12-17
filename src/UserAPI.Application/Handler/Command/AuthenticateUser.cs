@@ -60,11 +60,13 @@ namespace UserAPI.Application.Handler.Command
             OneOf<Response, ValidationFail, InternalError>>
         {
             private static readonly ILogger Logger = Log.ForContext(typeof(AuthenticateUser));
-            
+
             private readonly IJwtFactory _jwtFactory;
             private readonly IValidator<Request> _validator;
+            private readonly ISessionFactory _sessionFactory;
             private readonly IRefreshTokenFactory _refreshTokenFactory;
             private readonly IRefreshTokenRepository _refreshTokenRepository;
+            private readonly ISessionsRepository _sessionsRepository;
             private readonly IUserRepository _userRepository;
             private readonly IPasswordService _passwordService;
 
@@ -74,7 +76,9 @@ namespace UserAPI.Application.Handler.Command
                 IPasswordService passwordService,
                 IRefreshTokenRepository refreshTokenRepository,
                 IRefreshTokenFactory refreshTokenFactory,
-                IValidator<Request> validator)
+                IValidator<Request> validator,
+                ISessionFactory sessionFactory,
+                ISessionsRepository sessionsRepository)
             {
                 _jwtFactory = jwtFactory;
                 _userRepository = userRepository;
@@ -82,6 +86,8 @@ namespace UserAPI.Application.Handler.Command
                 _refreshTokenRepository = refreshTokenRepository;
                 _refreshTokenFactory = refreshTokenFactory;
                 _validator = validator;
+                _sessionFactory = sessionFactory;
+                _sessionsRepository = sessionsRepository;
             }
 
             public async Task<OneOf<Response, ValidationFail, InternalError>> Handle(
@@ -105,9 +111,12 @@ namespace UserAPI.Application.Handler.Command
                         return ValidationFail.FromMessage(ErrorMessage.InvalidCredentials);
                     }
 
-                    var jwt = await _jwtFactory.CreateAsync(new SessionEntity(user.Id));
-                    var refreshToken = _refreshTokenFactory.Create(user.Id);
+                    var session = _sessionFactory.Create(user.Id);
+                    var jwt = await _jwtFactory.CreateAsync(session);
+                    var refreshToken = _refreshTokenFactory.Create(user.Id, session.Id);
+                    
                     await _refreshTokenRepository.CreateAsync(refreshToken);
+                    await _sessionsRepository.CreateAsync(session);
                     
                     return new Response(jwt, refreshToken.Id);
                 }

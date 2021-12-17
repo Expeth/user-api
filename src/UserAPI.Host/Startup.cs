@@ -48,6 +48,8 @@ namespace UserAPI.Host
                 .AddSingleton<IJwtFactory, JwtFactory>()
                 .AddSingleton<ISigningCredentialsFactory, RsaSecurityKeyFactory>()
                 .AddSingleton<IRefreshTokenFactory, RefreshTokenFactory>()
+                .AddSingleton<ISessionFactory, SessionFactory>()
+                .AddSingleton<ISessionsRepository, SessionRepository>()
                 .AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>()
                 .AddSingleton(_ =>
                     new MongoClient(Configuration.GetConnectionString("MongoDB")).GetDatabase("UserAPI"));
