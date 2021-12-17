@@ -46,13 +46,12 @@ namespace UserAPI.Application.Handler.Command
             {
                 RuleFor(i => i.Login)
                     .NotNull()
-                    .NotEmpty()
-                    .Must(i => i.Length < 30);
+                    .NotEmpty();
                 
                 RuleFor(i => i.Password)
                     .NotNull()
                     .NotEmpty()
-                    .Must(i => i.Length < 30);
+                    .Must(i => i.Length > 5);
             }
         }
 
