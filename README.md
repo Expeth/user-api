@@ -1,7 +1,8 @@
 <div>
     <h2 align=center> User API</h2>
     <p align="center">
-        <img align=center src="https://circleci.com/gh/Expeth/user-api/tree/dev.svg?style=svg&circle-token=80c25fde688730c4dbc393ffeab9a12d6e9af00c"/>
+        <img align=center src="https://circleci.com/gh/Expeth/user-api/tree/dev.svg?style=shield&circle-token=80c25fde688730c4dbc393ffeab9a12d6e9af00c"/>
+        <img align=center src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release"/>
     </p>
 </div>
 
@@ -59,7 +60,6 @@ Please NOTE, that in this case you also need to run MongoDB manually and update 
 This project has E2E tests written with NUnit framework. They are included to CI pipeline. To run them locally you should use docker-compose. Here are the CLI commands you need to run in order to start tests execution:
 ```
 cd docker-compose
-docker-compose up --build
 docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml up --build
 ```
 
