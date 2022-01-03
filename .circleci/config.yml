@@ -38,6 +38,14 @@ jobs:
             exit $TESTS_EXIT_CODE
       - run: docker-compose -f docker-compose.yaml -f docker-compose-e2e-tests.yaml down
 
+  release:
+    docker:
+      - image: cimg/node:16.13.1
+    steps:
+      - checkout
+      - run: npm install semantic-release@18.0.1
+      - run: npx semantic-release --debug
+
 workflows:
   userapi-workflow:
     jobs:
@@ -55,3 +63,9 @@ workflows:
           filters:
             branches:
               ignore: /docs\/.*/
+      - release:
+          requires:
+            - e2e-tests
+          filters:
+            branches:
+              only: dev
