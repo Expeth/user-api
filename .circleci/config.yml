@@ -44,7 +44,7 @@ jobs:
     steps:
       - checkout
       - run: npm install semantic-release@18.0.1
-      - run: npx semantic-release --dry-run --debug
+      - run: npx semantic-release --debug
 
 workflows:
   userapi-workflow:
@@ -68,4 +68,4 @@ workflows:
             - e2e-tests
           filters:
             branches:
-              only: feat/setup-semantic-release
+              only: dev
