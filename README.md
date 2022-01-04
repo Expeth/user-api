@@ -3,6 +3,7 @@
     <p align="center">
         <img align=center src="https://circleci.com/gh/Expeth/user-api/tree/dev.svg?style=shield&circle-token=80c25fde688730c4dbc393ffeab9a12d6e9af00c"/>
         <img align=center src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release"/>
+        <img align=center src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgithub.kovetskiy.com%2Fbadges%2FlatestRelease%2Fuser-api"/>
     </p>
 </div>
 
