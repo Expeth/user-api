@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using UserAPI.Application.Common.Abstraction.Repository;
@@ -12,6 +13,19 @@ namespace UserAPI.Infrastructure.Repository
         public SessionRepository(IMongoDatabase database)
         {
             _database = database;
+        }
+
+        public async Task<bool> SetEndedAsync(string id)
+        {
+            var collection = _database.GetCollection<SessionEntity>("sessions");
+            var filterBuilder = Builders<SessionEntity>.Filter;
+            var filter = filterBuilder.Eq(i => i.Id, id);
+
+            var updateBuilder = Builders<SessionEntity>.Update;
+            var update = updateBuilder.Set(i => i.EndTime, DateTime.UtcNow);
+
+            var result = await collection.UpdateOneAsync(filter, update);
+            return result.IsAcknowledged;
         }
 
         public async Task<SessionEntity> GetAsync(string id)

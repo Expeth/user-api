@@ -41,6 +41,16 @@ namespace UserAPI.Host.IntegrationTests.Scenario.Base
             };
         }
 
+        protected Task<(HttpStatusCode code, string strResponse)> SendAsJson(string path, string jwt = null)
+        {
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                return SendAsJsonInternal(path, string.Empty, AuthorizedHttpClient(jwt));
+            }
+            
+            return SendAsJsonInternal(path, string.Empty, HttpClient);
+        }
+        
         protected Task<(HttpStatusCode code, string strResponse, TResponse response)> SendAsJson<TRequest,
             TResponse>(string path, TRequest request, string jwt = null)
         {

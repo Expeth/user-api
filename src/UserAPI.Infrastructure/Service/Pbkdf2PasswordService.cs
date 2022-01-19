@@ -29,7 +29,7 @@ namespace UserAPI.Infrastructure.Service
         public bool ValidateHash(string hash, string password, string salt)
         {
             var pwdHash = GenerateHash(password, salt);
-            return string.Equals(pwdHash.Hash, hash, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(pwdHash.Hash, hash);
         }
 
         private byte[] GenerateSalt()
