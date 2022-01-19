@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Application.Handler.Command;
+using UserAPI.Application.Handler.Query;
 using UserAPI.Contracts.Request;
 using UserAPI.Contracts.Response;
 using UserAPI.Host.Extensions;
@@ -52,6 +52,16 @@ namespace UserAPI.Host.Controllers
             var domainResponse = await _mediator.Send(domainRequest);
             return domainResponse.Match(response =>
                     Ok(new RefreshJwtResponse(response.Jwt, response.RefreshToken)), BadRequest, InternalError);
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var domainRequest = new LogoutUser.Request(HttpContext.User.Claims.ToClaimsObject());
+
+            var domainResponse = await _mediator.Send(domainRequest);
+            return domainResponse.Match(Ok, BadRequest, InternalError);
         }
     }
 }
