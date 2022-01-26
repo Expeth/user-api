@@ -24,7 +24,7 @@ jobs:
       image: ubuntu-2004:202111-01
     steps:
       - checkout
-      - run docker build . -f src/UserAPI.Host/Dockerfile
+      - run: docker build . -f src/UserAPI.Host/Dockerfile
   e2e-tests:
     machine:
       image: ubuntu-2004:202111-01
