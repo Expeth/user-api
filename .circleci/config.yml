@@ -20,8 +20,7 @@ jobs:
           command: |
             dotnet test tests/UserAPI.Infrastructure.UnitTests
   docker-build:
-    machine:
-      image: ubuntu-2004:202111-01
+    machine: true
     steps:
       - checkout
       - run: docker build . -f src/UserAPI.Host/Dockerfile
