@@ -19,6 +19,11 @@ jobs:
           name: unit-tests
           command: |
             dotnet test tests/UserAPI.Infrastructure.UnitTests
+  docker-build:
+    machine: true
+    steps:
+      - checkout
+      - run: docker build . -f src/UserAPI.Host/Dockerfile
   e2e-tests:
     machine:
       image: ubuntu-2004:202111-01
@@ -56,10 +61,17 @@ workflows:
           filters:
             branches:
               ignore: /docs\/.*/
+      - docker-build:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /docs\/.*/
       - e2e-tests:
           requires:
             - build
             - unit-tests
+            - docker-build
           filters:
             branches:
               ignore: /docs\/.*/
